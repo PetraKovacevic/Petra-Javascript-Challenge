@@ -15,7 +15,7 @@
                             <h1 id="navbar">Navbar</h1>
                         </div>
 
-                        <div class="bs-component">
+                        <div class="bs-component code-snippet-container">
                             <nav class="navbar navbar-default">
                                 <div class="container-fluid">
                                     <div class="navbar-header">
@@ -59,7 +59,7 @@
                             </nav>
                         </div>
 
-                        <div class="bs-component">
+                        <div class="bs-component code-snippet-container">
                             <nav class="navbar navbar-inverse">
                                 <div class="container-fluid">
                                     <div class="navbar-header">
@@ -122,7 +122,7 @@
                 <div class="row">
                     <div class="col-lg-7">
 
-                        <p class="bs-component">
+                        <p class="bs-component code-snippet-container">
                             <a href="#" class="btn btn-default">Default</a>
                             <a href="#" class="btn btn-primary">Primary</a>
                             <a href="#" class="btn btn-success">Success</a>
@@ -132,7 +132,7 @@
                             <a href="#" class="btn btn-link">Link</a>
                         </p>
 
-                        <p class="bs-component">
+                        <p class="bs-component code-snippet-container">
                             <a href="#" class="btn btn-default disabled">Default</a>
                             <a href="#" class="btn btn-primary disabled">Primary</a>
                             <a href="#" class="btn btn-success disabled">Success</a>
@@ -1147,6 +1147,7 @@
 
 
         <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="js/code_snippet.js"></script>
     </body>
 </html>
