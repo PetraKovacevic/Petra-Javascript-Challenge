@@ -32,7 +32,9 @@ var Modal = (function($) {
 	var showModal = function(modalBodyContent) {
 
 		// Add the text to the modal body and show the modal
-		document.getElementById(modalId).getElementsByClassName('modal-body')[0].appendChild(modalBodyContent);
+		var modalBody = document.getElementById(modalId).getElementsByClassName('modal-body')[0];
+		modalBody.innerHTML = '';
+		modalBody.appendChild(modalBodyContent);
 		$('#' + modalId).modal('show');
 
 	};
