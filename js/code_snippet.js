@@ -2,7 +2,7 @@
 */
 
 
-var Modal = (function() {
+var Modal = (function($) {
 
 	var modalId;
 
@@ -17,7 +17,6 @@ var Modal = (function() {
 		html += '<h4 class="modal-title">Source Code</h4>'
 		html += '</div>'; // Close header
 		html += '<div class="modal-body">';
-		html += '<pre id="modalSourceCodeText" style="word-wrap: normal;"></pre>'
 		html += '</div>'; // Close body
 		html += '</div>'; // Close content
 		html += '</div>'; // Close dialog
@@ -26,10 +25,6 @@ var Modal = (function() {
 	    var temp = document.createElement('div');
 	    temp.innerHTML = html;
 
-	    // Add the copy link before the pre tag in the modal body
-	    var copyButton = buildCopyLink();
-	    temp.getElementsByClassName('modal-body')[0].insertBefore(copyButton, temp.getElementsByClassName('modal-body')[0].firstChild);
-
 	    // Add the modal to the page
 	    document.body.appendChild(temp.firstChild);
 	};
@@ -37,76 +32,25 @@ var Modal = (function() {
 	var showModal = function(modalBodyContent) {
 
 		// Add the text to the modal body and show the modal
-		document.getElementById('modalSourceCodeText').innerHTML = modalBodyContent;
+		document.getElementById(modalId).getElementsByClassName('modal-body')[0].appendChild(modalBodyContent);
 		$('#' + modalId).modal('show');
 
 	};
 
-	var buildCopyLink = function() {
-
-		// Set the css for the copy button
-		var copyCss = 'top: 15px; right: 15px; position: absolute; ' +
-					'background:#fff; color:#454545; border:1px solid #ddd; ' + 
-				    'padding:2px 7px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;' +
-				    'font-size: 13px; text-decoration: none;';
-
-	    // Set the html for the copy button
-		var copyButton = '<button type="button" class="select-text"><span>Copy</span></button>';
-
-	    var temp = document.createElement('div');
-	    temp.innerHTML = copyButton;
-	    copyButton = temp.firstChild;
-	    copyButton.style.cssText = copyCss;
-
-	    // Add an event listener on click to select and copy the source code
-	    copyButton.addEventListener('click', function(e) {
-	    	selectText('modalSourceCodeText');
-	    });
-
-	    return copyButton;
-	};
-
-	var selectText = function(element) {
-	    var text = document.getElementById(element), 
-	    	range, 
-	    	selection;
-
-    	// Selects the text of a given element
-	    if (document.body.createTextRange) { // IE
-	        range = document.body.createTextRange();
-	        range.moveToElementText(text);
-	        range.select();
-	    } else if (window.getSelection) { 	// Chrome, Firefox, Opera
-	        selection = window.getSelection();        
-	        range = document.createRange();
-	        range.selectNodeContents(text);
-	        selection.removeAllRanges();
-	        selection.addRange(range);
-	    }
-
-	    // Copy to clipboard
-	    try {
-		    var successful = document.execCommand('copy');
-		  } catch (err) {
-		    alert('Text could not be copied.');
-		  }
-	}
-
 	var init = function() {
-		modalId = 'sourceCodeModal';
 		buildModal();
 	};
 
 	return {
-		// buildModal: buildModal,
 		init: init,
 		showModal: showModal
 	}
-})();
+})(jQuery);
 
-var SourceCode = (function() {
+var SourceCode = (function(Modal) {
 
-	var snippetClassName;
+	var snippetClassName = 'code-snippet-container';
+	var sourceCodeContainerClassName = 'source-code-container';
 
 	var buildCodeSnippetLink = function() {
 
@@ -127,6 +71,55 @@ var SourceCode = (function() {
 	    return helper;
 	};
 
+	var buildCopyLink = function(selectId) {
+
+		// Set the css for the copy button
+		var copyCss = 'top: 15px; right: 15px; position: absolute; ' +
+					'background:#fff; color:#454545; border:1px solid #ddd; ' + 
+				    'padding:2px 7px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;' +
+				    'font-size: 13px; text-decoration: none;';
+
+	    // Set the html for the copy button
+		var copyButton = '<button type="button" class="select-text"><span>Copy</span></button>';
+
+	    var temp = document.createElement('div');
+	    temp.innerHTML = copyButton;
+	    copyButton = temp.firstChild;
+	    copyButton.style.cssText = copyCss;
+
+	    // Add an event listener on click to select and copy the source code
+	    copyButton.addEventListener('click', function(e) {
+	    	selectText(selectId);
+	    });
+
+	    return copyButton;
+	};
+
+	var selectText = function(selectId) {
+
+	    var text = document.getElementById(selectId), 
+	    	range, 
+	    	selection;
+
+    	// Selects the text of a given element
+	    if (document.body.createTextRange) { // IE
+	        range = document.body.createTextRange();
+	        range.moveToElementText(text);
+	        range.select();
+	    } else if (window.getSelection) { 	// Chrome, Firefox, Opera
+	        selection = window.getSelection();        
+	        range = document.createRange();
+	        range.selectNodeContents(text);
+	        selection.removeAllRanges();
+	        selection.addRange(range);
+	    }
+
+	    // Copy to clipboard
+	    // This may or may not work, depends on the browser
+	    document.execCommand('copy');
+
+	}
+
 	var processSourceCode = function(sourceCode) {
 
 		// Remove the source code link from the html
@@ -144,7 +137,21 @@ var SourceCode = (function() {
 
 		sourceCode = sourceCode.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace('\t','');
 
-		return sourceCode;
+		// Create the source code <pre> container
+		var sourceCodeContainer = document.createElement('pre');
+		sourceCodeContainer.style.cssText = 'word-wrap: normal;';
+		sourceCodeContainer.id = sourceCodeContainerClassName;
+		sourceCodeContainer.innerHTML = sourceCode;
+
+		// Create the copy button
+		var copyButton = buildCopyLink(sourceCodeContainerClassName);
+
+		// Create the final element that will be shown in the modal with the copy button and source code
+		var temp = document.createElement('div');
+		temp.appendChild(copyButton);
+		temp.appendChild(sourceCodeContainer);
+
+		return temp;
 	};
 
 	var bindUIActions = function() {
@@ -188,8 +195,6 @@ var SourceCode = (function() {
 	};
 
 	var init = function() {
-
-		snippetClassName = 'code-snippet-container';
 		Modal.init();
 		bindUIActions();
 	};
